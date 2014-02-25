@@ -21,23 +21,19 @@
 		CKConversationListCell *cell = (CKConversationListCell *) sender.view;
 		UITableView *table = MSHookIvar<UITableView *>(self, "_table");
 		CKConversation *conversation = [[[%c(CKConversationList) sharedConversationList] conversations] objectAtIndex:[table indexPathForCell:cell].row];
-		IMMessage *lastMessage = [conversation.chat lastMessage];
-		[conversation.chat __clearReadMessageCache];
+		
+		IMChat *chat = conversation.chat;
+		//IMMessage *message = [chat lastIncomingMessage];
+		//[chat __clearReadMessageCache];
 
-		if(lastMessage.isRead){
-			NSLog(@"[Unread] Detected swipe on %@, marking %@ as unread...", cell, conversation);
-			lastMessage = [[IMMessage alloc] initWithSender:lastMessage.sender time:lastMessage.time text:lastMessage.text messageSubject:lastMessage.messageSubject fileTransferGUIDs:lastMessage.fileTransferGUIDs flags:lastMessage.flags error:lastMessage.error guid:lastMessage.guid subject:lastMessage.subject];
-			//[conversation.chat _setDBUnreadCount:++unreadCount];
-		}
+		NSLog(@"[Unread] Detected swipe on %@, marking %@...", cell, chat);
+		[chat _setDBUnreadCount:(1-conversation.unreadCount)];
 
-		else{
-			NSLog(@"[Unread] Detected swipe on %@, marking %@ as read...", cell, conversation);
-			[lastMessage _updateTimeRead:[NSDate date]];
-			//[conversation.chat _setDBUnreadCount:((unreadCount = 0))];
-		}
+		[chat _updateUnreadCount];
+		[self _chatUnreadCountDidChange:chat];
 
-		[conversation.chat _updateUnreadCount];
-		[self _chatUnreadCountDidChange:conversation.chat];
+		//[[%c(IMChatRegistry) sharedInstance] updateUnreadCountForChat:chat];
+		//[[%c(IMDChatRegistry) sharedInstance] updateUnreadCountForChat:chat];
 	}
 }
 

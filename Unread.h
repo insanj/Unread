@@ -12,9 +12,9 @@
 @end
 
 @interface CKConversationListCell : UITableViewCell
-@property(retain) NSDate * searchMessageDate;
-@property(copy) NSString * searchMessageGUID;
-@property(copy) NSString * searchSummaryText;
+@property(retain) NSDate *searchMessageDate;
+@property(copy) NSString *searchMessageGUID;
+@property(copy) NSString *searchSummaryText;
 @end
 
 @interface CKConversationList : NSObject

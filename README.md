@@ -1,7 +1,7 @@
 Unread
 =======================
 
-Hold to mark Messages threads as unread.
+Hold on any conversation in Messages to mark it as unread (or read, if it's already marked).
 
 ---------------------------------------	
 [Creative Commons Attribution-NonCommercial 3.0 United States License](http://creativecommons.org/licenses/by-nc/3.0/us/) as of 2014:

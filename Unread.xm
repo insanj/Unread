@@ -26,15 +26,13 @@
 
 		if(lastMessage.isRead){
 			NSLog(@"[Unread] Detected swipe on %@, marking %@ as unread...", cell, conversation);
-			[lastMessage _updateTimeRead:nil];
-			lastMessage.isRead = NO;
+			lastMessage = [[IMMessage alloc] initWithSender:lastMessage.sender time:lastMessage.time text:lastMessage.text messageSubject:lastMessage.messageSubject fileTransferGUIDs:lastMessage.fileTransferGUIDs flags:lastMessage.flags error:lastMessage.error guid:lastMessage.guid subject:lastMessage.subject];
 			//[conversation.chat _setDBUnreadCount:++unreadCount];
 		}
 
 		else{
 			NSLog(@"[Unread] Detected swipe on %@, marking %@ as read...", cell, conversation);
 			[lastMessage _updateTimeRead:[NSDate date]];
-			lastMessage.isRead = YES;
 			//[conversation.chat _setDBUnreadCount:((unreadCount = 0))];
 		}
 

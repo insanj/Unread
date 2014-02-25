@@ -7,6 +7,18 @@
 @interface IMMessage : NSObject
 @property(readwrite) BOOL isRead;
 @property(retain) NSDate *timeRead;
+
+@property(retain) id sender; // IMHandle *
+@property(retain) NSDate *time;
+@property(retain) NSAttributedString * text;
+@property(readonly) NSAttributedString *messageSubject;
+@property(copy) NSArray *fileTransferGUIDs;
+@property(readonly) unsigned long long flags;
+@property(retain) NSError *error;
+@property(retain) NSString *guid;
+@property(readonly) id subject; // IMHandle *
+
+- (id)initWithSender:(id)arg1 time:(id)arg2 text:(id)arg3 messageSubject:(id)arg4 fileTransferGUIDs:(id)arg5 flags:(unsigned long long)arg6 error:(id)arg7 guid:(id)arg8 subject:(id)arg9;
 - (void)_updateTimeRead:(id)arg1;
 @end
 

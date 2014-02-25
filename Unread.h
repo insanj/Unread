@@ -32,3 +32,9 @@
 @property(readwrite) BOOL hasUnreadiMessages;
 @property(readwrite) unsigned int unreadCount;
 @end
+
+@interface IMChatRegistry : NSObject
++ (id)sharedInstance;
+- (void)_updateUnreadCountForChat:(id)arg1;
+- (void)unreadCountChanged:(int)arg1;
+@end

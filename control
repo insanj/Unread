@@ -1,6 +1,5 @@
 Package: com.insanj.unread
 Name: Unread
-Pre-Depends: firmware (>= 7.0)
 Depends: mobilesubstrate
 Version: 1.0.1
 Architecture: iphoneos-arm

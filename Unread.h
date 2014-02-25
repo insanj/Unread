@@ -22,8 +22,12 @@
 - (id)conversations;
 @end
 
-@interface IMChat : NSObject
+@interface IMChat : NSObject {
+    unsigned int _cachedUnreadCount;
+}
+
 - (void)_setDBUnreadCount:(unsigned int)arg1;
+- (unsigned int)_recalculateCachedUnreadCount;
 @end
 
 @interface CKConversation : NSObject

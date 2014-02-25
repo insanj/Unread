@@ -12,23 +12,25 @@
 		UITableView *table = MSHookIvar<UITableView *>(self, "_table");
 		CKConversation *conversation = [[[%c(CKConversationList) sharedConversationList] conversations] objectAtIndex:[table indexPathForCell:cell].row];
 
-		IMChatRegistry *sharedRegistry = [%c(IMChatRegistry) sharedInstance];
-		unsigned int daemonUnread = MSHookIvar<unsigned int>(sharedRegistry, "_daemonUnreadCount");
-
-		if(conversation.unreadCount == 0){
+		int unreadCount = conversation.unreadCount;
+		if(unreadCount == 0){
 			NSLog(@"[Unread] Detected long-press on %@, marking %@ as unread...", cell, conversation);
-			[conversation.chat _setDBUnreadCount:conversation.unreadCount+1];
+			unreadCount++;
+			
+			[conversation.chat _setDBUnreadCount:unreadCount];
 			[self _chatUnreadCountDidChange:conversation.chat];
-			[sharedRegistry unreadCountChanged:(daemonUnread+1)];
-			[sharedRegistry _updateUnreadCountForChat:conversation.chat];
+			MSHookIvar<unsigned int>(conversation.chat, "_cachedUnreadCount") = unreadCount;
+			//[conversation.chat _recalculateCachedUnreadCount];
 		}
 
 		else{
 			NSLog(@"[Unread] Detected long-press on %@, marking %@ as read...", cell, conversation);
-			[sharedRegistry unreadCountChanged:(daemonUnread-conversation.unreadCount)];
+			unreadCount = 0;
+
 			[conversation.chat _setDBUnreadCount:0];
 			[self _chatUnreadCountDidChange:conversation.chat];
-			[sharedRegistry _updateUnreadCountForChat:conversation.chat];
+			MSHookIvar<unsigned int>(conversation.chat, "_cachedUnreadCount") = unreadCount;
+			//[conversation.chat _recalculateCachedUnreadCount];
 		}
 
 	}
@@ -42,6 +44,16 @@
 	[longPress release];
 
     return cell;
+}
+
+%end
+
+%hook IMChat
+
+- (unsigned int)_recalculateCachedUnreadCount{
+	%log;
+	NSLog(@"----- %i", (int)%orig);
+	return %orig();
 }
 
 %end

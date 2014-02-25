@@ -17,22 +17,28 @@
 }
 
 %new -(void)ur_gestureRecognized:(UISwipeGestureRecognizer *)sender{
-	if(sender.direction == UISwipeGestureRecognizerDirectionRight) {
+	if(sender.direction == UISwipeGestureRecognizerDirectionRight) {		
 		CKConversationListCell *cell = (CKConversationListCell *) sender.view;
 		UITableView *table = MSHookIvar<UITableView *>(self, "_table");
 		CKConversation *conversation = [[[%c(CKConversationList) sharedConversationList] conversations] objectAtIndex:[table indexPathForCell:cell].row];
+		IMMessage *lastMessage = [conversation.chat lastMessage];
+		[conversation.chat __clearReadMessageCache];
 
-		int unreadCount = conversation.unreadCount;
-		if(unreadCount == 0){
-			NSLog(@"[Unread] Detected long-press on %@, marking %@ as unread...", cell, conversation);
-			[conversation.chat _setDBUnreadCount:++unreadCount];
+		if(lastMessage.isRead){
+			NSLog(@"[Unread] Detected swipe on %@, marking %@ as unread...", cell, conversation);
+			[lastMessage _updateTimeRead:nil];
+			lastMessage.isRead = NO;
+			//[conversation.chat _setDBUnreadCount:++unreadCount];
 		}
 
 		else{
-			NSLog(@"[Unread] Detected long-press on %@, marking %@ as read...", cell, conversation);
-			[conversation.chat _setDBUnreadCount:((unreadCount = 0))];
+			NSLog(@"[Unread] Detected swipe on %@, marking %@ as read...", cell, conversation);
+			[lastMessage _updateTimeRead:[NSDate date]];
+			lastMessage.isRead = YES;
+			//[conversation.chat _setDBUnreadCount:((unreadCount = 0))];
 		}
 
+		[conversation.chat _updateUnreadCount];
 		[self _chatUnreadCountDidChange:conversation.chat];
 	}
 }

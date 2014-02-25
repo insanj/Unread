@@ -1,9 +1,10 @@
 Package: com.insanj.unread
 Name: Unread
 Depends: mobilesubstrate
-Version: 1.0.1
+Version: 1.1
 Architecture: iphoneos-arm
-Description: Hold to mark Messages as (un)read.
+Description: Easily mark Messages as (un)read.
+ Swipe to the right on any conversation in Messages to mark it as unread (or read, if it's already marked).
 Maintainer: Julian Weiss <insanjmail@gmail.com>
 Author: Julian (insanj) Weiss
 Section: Tweaks

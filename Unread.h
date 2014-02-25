@@ -4,7 +4,16 @@
 
 /*********************************** IMCore ************************************/
 
+@interface IMMessage : NSObject
+@property(readwrite) BOOL isRead;
+@property(retain) NSDate *timeRead;
+- (void)_updateTimeRead:(id)arg1;
+@end
+
 @interface IMChat : NSObject
+- (void)__clearReadMessageCache;
+- (id)lastMessage; // IMMessage *
+- (void)_updateUnreadCount;
 - (void)_setDBUnreadCount:(unsigned int)arg1;
 @end
 
@@ -12,6 +21,13 @@
 + (id)sharedInstance;
 - (void)_updateUnreadCountForChat:(id)arg1;
 - (void)unreadCountChanged:(int)arg1;
+- (unsigned int)unreadCount;
+- (void)unreadCountChanged:(int)arg1;
+@end
+
+@interface IMDChatRegistry : NSObject
++ (id)sharedInstance;
+- (BOOL)updateUnreadCountForChat:(id)arg1;
 @end
 
 @interface IMDaemonController : NSObject

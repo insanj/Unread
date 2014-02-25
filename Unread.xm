@@ -4,6 +4,8 @@
 -(void)ur_markUnread:(UILongPressGestureRecognizer *)sender;
 @end
 
+static char * kUnreadAmount;
+
 %hook CKConversationListController
 
 %new -(void)ur_markUnread:(UILongPressGestureRecognizer *)sender{
@@ -15,24 +17,17 @@
 		int unreadCount = conversation.unreadCount;
 		if(unreadCount == 0){
 			NSLog(@"[Unread] Detected long-press on %@, marking %@ as unread...", cell, conversation);
-			unreadCount++;
-			
-			[conversation.chat _setDBUnreadCount:unreadCount];
-			[self _chatUnreadCountDidChange:conversation.chat];
-			MSHookIvar<unsigned int>(conversation.chat, "_cachedUnreadCount") = unreadCount;
-			//[conversation.chat _recalculateCachedUnreadCount];
+			[conversation.chat _setDBUnreadCount:++unreadCount];
 		}
 
 		else{
 			NSLog(@"[Unread] Detected long-press on %@, marking %@ as read...", cell, conversation);
-			unreadCount = 0;
-
-			[conversation.chat _setDBUnreadCount:0];
-			[self _chatUnreadCountDidChange:conversation.chat];
-			MSHookIvar<unsigned int>(conversation.chat, "_cachedUnreadCount") = unreadCount;
-			//[conversation.chat _recalculateCachedUnreadCount];
+			[conversation.chat _setDBUnreadCount:((unreadCount = 0))];
 		}
 
+		[self _chatUnreadCountDidChange:conversation.chat];
+		objc_setAssociatedObject(conversation.chat, &kUnreadAmount, @(unreadCount), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+		[conversation.chat _recalculateCachedUnreadCount];
 	}
 }
 
@@ -51,28 +46,9 @@
 %hook IMChat
 
 - (unsigned int)_recalculateCachedUnreadCount{
-	%log;
-	NSLog(@"----- %i", (int)%orig);
-	return %orig();
-}
-
-%end
-
-%hook IMChatRegistry
-
-- (void)_chat:(id)arg1 setValue:(id)arg2 forChatProperty:(id)arg3{
-	%log;
-	%orig();
-}
-
-- (void)_updateUnreadCountForChat:(id)arg1{
-	%log;
-	%orig();
-}
-
-- (void)unreadCountChanged:(int)arg1{
-	%log;
-	%orig();
+	unsigned int recalcValue = [objc_getAssociatedObject(self, &kUnreadAmount) intValue] + %orig();
+	objc_setAssociatedObject(self, &kUnreadAmount, nil, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+	return recalcValue;
 }
 
 %end

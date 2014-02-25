@@ -1,20 +1,29 @@
-#import <UIKit/UIKit.h>
-#import <objc/runtime.h>
+#include <UIKit/UIKit.h>
+#include <CoreGraphics/CoreGraphics.h>
+#include <objc/runtime.h>
 
-@interface CKConversationListController : UIViewController <UITableViewDataSource, UITableViewDelegate>{
-    UITableView *_table;
-}
+/*********************************** IMCore ************************************/
 
-- (void)_chatUnreadCountDidChange:(id)arg1;
-- (void)conversationWillBeMarkedRead:(id)arg1;
-- (void)noteUnreadCountsChanged;
-- (void)updateConversationList;
+@interface IMChat : NSObject
+- (void)_setDBUnreadCount:(unsigned int)arg1;
 @end
 
-@interface CKConversationListCell : UITableViewCell
-@property(retain) NSDate *searchMessageDate;
-@property(copy) NSString *searchMessageGUID;
-@property(copy) NSString *searchSummaryText;
+@interface IMChatRegistry : NSObject
++ (id)sharedInstance;
+- (void)_updateUnreadCountForChat:(id)arg1;
+- (void)unreadCountChanged:(int)arg1;
+@end
+
+@interface IMDaemonController : NSObject
+- (void)listener:(id)arg1 setValue:(id)arg2 ofPersistentProperty:(id)arg3;
+- (void)listener:(id)arg1 setValue:(id)arg2 ofProperty:(id)arg3;
+@end
+
+/*********************************** ChatKit ***********************************/
+
+@interface CKConversation : NSObject
+@property(retain) IMChat *chat;
+@property(readwrite) unsigned int unreadCount;
 @end
 
 @interface CKConversationList : NSObject
@@ -22,23 +31,12 @@
 - (id)conversations;
 @end
 
-@interface IMChat : NSObject {
-    unsigned int _cachedUnreadCount;
+@interface CKConversationListCell : UITableViewCell
+@end
+
+@interface CKConversationListController : UIViewController <UITableViewDataSource, UITableViewDelegate>{
+    UITableView *_table;
 }
 
-- (void)_setDBUnreadCount:(unsigned int)arg1;
-- (unsigned int)_recalculateCachedUnreadCount;
-@end
-
-@interface CKConversation : NSObject
-@property(retain) IMChat *chat;
-@property(readwrite) BOOL hasUnreadMessages;
-@property(readwrite) BOOL hasUnreadiMessages;
-@property(readwrite) unsigned int unreadCount;
-@end
-
-@interface IMChatRegistry : NSObject
-+ (id)sharedInstance;
-- (void)_updateUnreadCountForChat:(id)arg1;
-- (void)unreadCountChanged:(int)arg1;
+- (void)_chatUnreadCountDidChange:(id)arg1;
 @end

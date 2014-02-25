@@ -6,7 +6,7 @@ include theos/makefiles/common.mk
 
 TWEAK_NAME = Unread
 Unread_FILES = Unread.xm
-Unread_FRAMEWORKS = UIKit
+Unread_FRAMEWORKS = UIKit CoreGraphics
 Unread_PRIVATE_FRAMEWORKS = ChatKit IMCore
 
 include $(THEOS_MAKE_PATH)/tweak.mk
